@@ -32,7 +32,7 @@ Or you can add it directly in your composer.json file:
 ```json
 {
     "require": {
-        "code-lts/laravel-fcm": "1.4.*"
+        "code-lts/laravel-fcm": "1.5.*"
     }
 }
 ```
@@ -268,12 +268,37 @@ $topicResponse->error());
 
 ```
 
+#### Creating a Topic
+
+```php
+$token = 'device_id';
+$topic_id = 'unique_topic_id'; //unique topic id.
+// Save notification key in your database you must use it to send messages or for managing this group
+$notification_key = FCMTopic::createTopic($topic_id, $token);
+```
+
+#### Subscribe to a Topic
+
+```php
+$recipients_tokens = ['device_id', '...'];
+$topic_id = 'unique_topic_id';
+$key = FCMTopic::subscribeTopic($topic_id, $recipients_tokens);
+```
+
+#### UnSubscribe to a Topic
+
+```php
+$recipients_tokens = ['device_id', '...'];
+$topic_id = 'unique_topic_id';
+$key = FCMTopic::unsubscribeTopic($topic_id, $recipients_tokens);
+```
+
+
 ### Group Messages
 
 #### Sending a Notification to a Group
 
 ```php
-$notificationKey = ['a_notification_key'];
 
 
 $notificationBuilder = new PayloadNotificationBuilder('my title');
@@ -282,6 +307,7 @@ $notificationBuilder->setBody('Hello world')
 
 $notification = $notificationBuilder->build();
 
+$notificationKey = ['a_notification_key'];
 
 $groupResponse = FCM::sendToGroup($notificationKey, null, $notification, null);
 
@@ -408,6 +434,13 @@ $topics->topic('TopicA')
        });
 ```
 
+## Validating
+
+### Validate FCM Token
+
+```php
+$isValid = FCMValidator::validateToken($token);
+``` 
 
 ## Testing
 

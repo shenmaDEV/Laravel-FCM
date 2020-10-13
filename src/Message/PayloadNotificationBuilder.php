@@ -3,7 +3,6 @@
 namespace LaravelFCM\Message;
 
 /**
- * Class PayloadNotificationBuilder.
  *
  * Official google documentation :
  *
@@ -178,10 +177,11 @@ class PayloadNotificationBuilder
     }
 
     /**
+     * Supported Android
      * Indicates the image that can be displayed in the notification
      * Supports an url or internal image.
      *
-     * @param $image
+     * @param null|string $image
      *
      * @return PayloadNotificationBuilder current instance of the builder
      */
