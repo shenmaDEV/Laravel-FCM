@@ -8,10 +8,7 @@ use LaravelFCM\Message\PayloadNotificationBuilder;
 
 class PayloadTest extends FCMTestCase
 {
-    /**
-     * @test
-     */
-    public function it_construct_a_valid_json_with_option()
+    public function testItConstructAValidJsonWithOption()
     {
         $targetPartial = '{
 					"collapse_key":"collapseKey",
@@ -83,10 +80,47 @@ class PayloadTest extends FCMTestCase
         $this->assertJsonStringEqualsJsonString($targetFull, $json);
     }
 
-    /**
-     * @test
-     */
-    public function it_construct_a_valid_json_with_data()
+    public function testBuildOptionsFcmOptionsAnalyticsLabel()
+    {
+        $targetPartial = '{
+					"direct_boot_ok": true,
+					"content_available":true
+				}';
+
+        $targetFull = '{
+					"collapse_key":"collapseKey",
+					"content_available":true,
+					"priority":"high",
+					"delay_while_idle":true,
+					"time_to_live":200,
+					"fcm_options": {
+            "analytics_label": "UA-xxxxxxx"
+          },
+					"dry_run": true,
+					"direct_boot_ok": true
+				}';
+
+        $optionBuilder = new OptionsBuilder();
+
+        $optionBuilder->setDirectBootOk(true);
+        $optionBuilder->setContentAvailable(true);
+
+        $json = json_encode($optionBuilder->build()->toArray());
+        $this->assertJsonStringEqualsJsonString($targetPartial, $json);
+        $this->assertNull($optionBuilder->getFcmOptionsAnalyticsLabel());
+        $optionBuilder->setPriority(OptionsPriorities::high)
+            ->setCollapseKey('collapseKey')
+            ->setDelayWhileIdle(true)
+            ->setDryRun(true)
+            ->setFcmOptionsAnalyticsLabel('UA-xxxxxxx')
+            ->setTimeToLive(200);
+
+        $this->assertSame('UA-xxxxxxx', $optionBuilder->getFcmOptionsAnalyticsLabel());
+        $json = json_encode($optionBuilder->build()->toArray());
+        $this->assertJsonStringEqualsJsonString($targetFull, $json);
+    }
+
+    public function testItConstructAValidJsonWithData()
     {
         $targetAdd = '{
 				"first_data":"first",
@@ -113,10 +147,7 @@ class PayloadTest extends FCMTestCase
         $this->assertJsonStringEqualsJsonString($targetSet, $json);
     }
 
-    /**
-     * @test
-     */
-    public function it_construct_a_valid_json_with_notification()
+    public function testItConstructAValidJsonWithNotification()
     {
         $targetPartial = '{
 					"title":"test_title",
@@ -170,10 +201,7 @@ class PayloadTest extends FCMTestCase
         $this->assertJsonStringEqualsJsonString($targetFull, $json);
     }
 
-    /**
-     * @test
-     */
-    public function it_throws_an_invalidoptionsexception_if_the_interval_is_too_big()
+    public function testItThrowsAnInvalidOptionsExceptionIfTheIntervalIsTooBig()
     {
         $this->setExceptionExpected(InvalidOptionsException::class);
 
