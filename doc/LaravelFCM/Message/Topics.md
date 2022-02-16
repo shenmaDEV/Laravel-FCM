@@ -33,9 +33,11 @@ Create topic or a topic condition
 |[<abbr title="LaravelFCM\Message\Topics">Topics</abbr>](../../LaravelFCM/Message/Topics.md)|<a name="#method_topic"></a>topic(string $first)|Add a topic, this method should be called before any conditional topic.||
 |[<abbr title="LaravelFCM\Message\Topics">Topics</abbr>](../../LaravelFCM/Message/Topics.md)|<a name="#method_orTopic"></a>orTopic(string|[Closure](https://www.php.net/Closure) $first)|Add a or condition to the precedent topic set.||
 |[<abbr title="LaravelFCM\Message\Topics">Topics</abbr>](../../LaravelFCM/Message/Topics.md)|<a name="#method_andTopic"></a>andTopic(string|[Closure](https://www.php.net/Closure) $first)|Add a and condition to the precedent topic set.||
-|[<abbr title="LaravelFCM\Message\Topics">Topics</abbr>](../../LaravelFCM/Message/Topics.md)|<a name="#method_nest"></a>nest([Closure](https://www.php.net/Closure) $callback, string $condition)|No description||
+|[<abbr title="LaravelFCM\Message\Topics">Topics</abbr>](../../LaravelFCM/Message/Topics.md)|<a name="#method_nest"></a>nest([Closure](https://www.php.net/Closure) $callback, string $condition, bool $strict = true)|No description||
 |array|string|<a name="#method_build"></a>build()|Transform to array.||
+|string|<a name="#method_topicsForFcm"></a>topicsForFcm(array $conditions)|No description||
 |bool|<a name="#method_hasOnlyOneTopic"></a>hasOnlyOneTopic()|Check if only one topic was set.||
+||<a name="#method_checkIfOneTopicExist"></a>checkIfOneTopicExist()|No description||
 
 
 ### Details
@@ -44,7 +46,7 @@ Create topic or a topic condition
 ### 
  [<abbr title="LaravelFCM\Message\Topics">Topics</abbr>](../../LaravelFCM/Message/Topics.md) **topic**(string $first)
 
-[at line 27](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L27)
+[at line 28](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L28)
 
 Add a topic, this method should be called before any conditional topic.        
 
@@ -65,30 +67,29 @@ Add a topic, this method should be called before any conditional topic.
 ### 
  [<abbr title="LaravelFCM\Message\Topics">Topics</abbr>](../../LaravelFCM/Message/Topics.md) **orTopic**(string|[Closure](https://www.php.net/Closure) $first)
 
-[at line 65](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L65)
+[at line 66](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L66)
 
-Add a or condition to the precedent topic set.        Parenthesis is a closure</p>
+Add a or condition to the precedent topic set.        Parenthesis is a closure
 
-<p>Equivalent of this: <strong>'TopicA' in topic' || 'TopicB' in topics</strong></p>
+Equivalent of this: **'TopicA' in topic' || 'TopicB' in topics**
 
-<pre><code>         $topic = new Topics();
-         $topic-&gt;topic('TopicA')
-               -&gt;orTopic('TopicB');
-</code></pre>
+```
+         $topic = new Topics();
+         $topic->topic('TopicA')
+               ->orTopic('TopicB');
+```
 
-<p>Equivalent of this: <strong>'TopicA' in topics &amp;&amp; ('TopicB' in topics || 'TopicC' in topics)</strong></p>
+Equivalent of this: **'TopicA' in topics && ('TopicB' in topics || 'TopicC' in topics)**
 
-<pre><code>         $topic = new Topics();
-         $topic-&gt;topic('TopicA')
-               -&gt;andTopic(function($condition) {
-                     $condition-&gt;topic('TopicB')-&gt;orTopic('TopicC');
+```
+         $topic = new Topics();
+         $topic->topic('TopicA')
+               ->andTopic(function($condition) {
+                     $condition->topic('TopicB')->orTopic('TopicC');
          });
-</code></pre>
+```
 
-<blockquote>
-  <p>Note: Only two operators per expression are supported by fcm</p>
-</blockquote>
-
+> Note: Only two operators per expression are supported by fcm
 
 #### Parameters
 
@@ -107,30 +108,29 @@ Add a or condition to the precedent topic set.        Parenthesis is a closure</
 ### 
  [<abbr title="LaravelFCM\Message\Topics">Topics</abbr>](../../LaravelFCM/Message/Topics.md) **andTopic**(string|[Closure](https://www.php.net/Closure) $first)
 
-[at line 99](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L99)
+[at line 100](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L100)
 
-Add a and condition to the precedent topic set.        Parenthesis is a closure</p>
+Add a and condition to the precedent topic set.        Parenthesis is a closure
 
-<p>Equivalent of this: <strong>'TopicA' in topic' &amp;&amp; 'TopicB' in topics</strong></p>
+Equivalent of this: **'TopicA' in topic' && 'TopicB' in topics**
 
-<pre><code>         $topic = new Topics();
-         $topic-&gt;topic('TopicA')
-               -&gt;anTopic('TopicB');
-</code></pre>
+```
+         $topic = new Topics();
+         $topic->topic('TopicA')
+               ->anTopic('TopicB');
+```
 
-<p>Equivalent of this: <strong>'TopicA' in topics || ('TopicB' in topics &amp;&amp; 'TopicC' in topics)</strong></p>
+Equivalent of this: **'TopicA' in topics || ('TopicB' in topics && 'TopicC' in topics)**
 
-<pre><code>         $topic = new Topics();
-         $topic-&gt;topic('TopicA')
-               -&gt;orTopic(function($condition) {
-                     $condition-&gt;topic('TopicB')-&gt;AndTopic('TopicC');
+```
+         $topic = new Topics();
+         $topic->topic('TopicA')
+               ->orTopic(function($condition) {
+                     $condition->topic('TopicB')->AndTopic('TopicC');
          });
-</code></pre>
+```
 
-<blockquote>
-  <p>Note: Only two operators per expression are supported by fcm</p>
-</blockquote>
-
+> Note: Only two operators per expression are supported by fcm
 
 #### Parameters
 
@@ -147,9 +147,9 @@ Add a and condition to the precedent topic set.        Parenthesis is a closure<
 <a name id="method_nest"></a>
 
 ### 
- [<abbr title="LaravelFCM\Message\Topics">Topics</abbr>](../../LaravelFCM/Message/Topics.md) **nest**([Closure](https://www.php.net/Closure) $callback, string $condition)
+ [<abbr title="LaravelFCM\Message\Topics">Topics</abbr>](../../LaravelFCM/Message/Topics.md) **nest**([Closure](https://www.php.net/Closure) $callback, string $condition, bool $strict = true)
 
-[at line 134](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L134)
+[at line 136](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L136)
 
 
 
@@ -157,7 +157,7 @@ Add a and condition to the precedent topic set.        Parenthesis is a closure<
 
 |   |   |   |
 |---|---|---|
-|[Closure](https://www.php.net/Closure)|$callback||string|$condition|
+|[Closure](https://www.php.net/Closure)|$callback||string|$condition||bool|$strict|Controls if the operators checking is enabled (default to true)
 
 #### Return Value
 
@@ -170,7 +170,7 @@ Add a and condition to the precedent topic set.        Parenthesis is a closure<
 ### 
  array|string **build**()
 
-[at line 159](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L159)
+[at line 167](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L167)
 
 Transform to array.        
 
@@ -187,12 +187,33 @@ Transform to array.
 |---|---|
 |[<abbr title="LaravelFCM\Message\Exceptions\NoTopicProvidedException">NoTopicProvidedException</abbr>](../../LaravelFCM/Message/Exceptions/NoTopicProvidedException.html)||
 
+<a name id="method_topicsForFcm"></a>
+
+### 
+protected string **topicsForFcm**(array $conditions)
+
+[at line 189](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L189)
+
+
+
+#### Parameters
+
+|   |   |   |
+|---|---|---|
+|array|$conditions|
+
+#### Return Value
+
+|   |   |
+|---|---|
+|string|
+
 <a name id="method_hasOnlyOneTopic"></a>
 
 ### 
  bool **hasOnlyOneTopic**()
 
-[at line 215](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L215)
+[at line 225](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L225)
 
 Check if only one topic was set.        
 
@@ -201,5 +222,20 @@ Check if only one topic was set.
 |   |   |
 |---|---|
 |bool|
+
+<a name id="method_checkIfOneTopicExist"></a>
+
+### 
+protected  **checkIfOneTopicExist**()
+
+[at line 235](https://github.com/code-lts/Laravel-FCM/blob/main/src/Message/Topics.php#L235)
+
+
+
+#### Exceptions
+
+|   |   |
+|---|---|
+|[<abbr title="LaravelFCM\Message\Exceptions\NoTopicProvidedException">NoTopicProvidedException</abbr>](../../LaravelFCM/Message/Exceptions/NoTopicProvidedException.html)||
 
 _Generated by [Doctum, a API Documentation generator and fork of Sami](https://github.com/code-lts/doctum)._
